@@ -1,0 +1,31 @@
+.board {
+    background-color: blue;
+    flex: 0 0 auto;
+  
+    display: grid;
+    align-content: space-between;
+    justify-content: center;
+    grid-template-columns: repeat(var(--board-num-cols), var(--board-cell-size));
+    grid-template-rows: repeat(var(--board-num-rows), var(--board-cell-size));
+    grid-gap: var(--board-gap);
+}
+
+.cell {
+    background-color: black;
+}
+
+.r {
+    background-color: red;
+}
+
+.g {
+    background-color: green;
+}
+
+.b {
+    background-color: blue;
+}
+
+.y {
+    background-color: purple;
+}

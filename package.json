@@ -1,0 +1,32 @@
+{
+  "name": "Tetris",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://g30133.github.io/tetris",
+  "dependencies": {},
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom --watchAll",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/enzyme": "^3.1.13",
+    "@types/enzyme-adapter-react-16": "^1.0.3",
+    "@types/jest": "^23.3.1",
+    "@types/node": "^10.7.1",
+    "@types/react": "^16.4.12",
+    "@types/react-dom": "^16.0.7",
+    "@types/react-test-renderer": "^16.0.2",
+    "enzyme": "^3.4.2",
+    "enzyme-adapter-react-16": "^1.2.0",
+    "gh-pages": "^1.2.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "react-scripts-ts": "^2.17.0",
+    "react-test-renderer": "^16.4.2",
+    "typescript": "^3.0.1"
+  }
+}
