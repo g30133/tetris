@@ -60,3 +60,41 @@ describe('piece should render', () => {
         })
     })
 })
+
+describe('testing collision', () => {
+    //TODO
+    let board:CellType[]
+    let fixed:CellType[]
+    beforeEach(() => {
+        board = []
+        for (let i = 0; i < C.NUM_ROWS * C.NUM_COLS; i++) {
+            board.push('.')
+        }
+
+        fixed = []
+        for(let i = 0; i < C.NUM_ROWS * C.NUM_COLS; i++) {
+            fixed.push('.')
+        }
+        for(let i = 0; i <= C.NUM_ROWS * C.NUM_COLS - C.NUM_COLS; i += C.NUM_COLS) {
+            fixed[i] = 'r'
+        }
+        Util.dumpBoard(fixed)
+    })
+    it('testing piece collision against floor', () => {
+        Util.dumpBoard(fixed)
+        const p = new Piece('O', 'r')
+        p.setupPosition(C.NUM_ROWS - 2, 4, '0deg')
+        p.emit(board)
+        Util.dumpBoard(board)
+        expect(p.isContactingFloor()).toBe(true)
+    })
+
+    it.only('testing piece collision against fixed', () => {
+        const p = new Piece('O', 'r')
+        p.setupPosition(C.NUM_ROWS - 5, 1, '0deg')
+        p.emit(board)
+        Util.dumpBoard(board)
+
+        expect(p.isContactingFixed(fixed, 'w')).toBe(true)
+    })
+})

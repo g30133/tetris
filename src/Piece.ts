@@ -2,7 +2,7 @@ import * as C from './constants'
 import { CellType } from './Board';
 
 type PieceColor = 'r' | 'g' | 'b' | 'y'
-type PieceType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'
+export type PieceType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'
 export type DirectionType = 's' |'e' | 'w'
 export type rotateType = '0deg' | '90deg' | '180deg' | '270deg'
 
@@ -46,6 +46,46 @@ class Piece {
                 this.unitDeltas.push({ dr:2, dc:0 })
                 this.unitDeltas.push({ dr:3, dc:0 })
             break
+            case 'T':
+                this.width = 3
+                this.height = 2
+                this.unitDeltas.push({ dr:0, dc:0 })
+                this.unitDeltas.push({ dr:0, dc:1 })
+                this.unitDeltas.push({ dr:0, dc:2 })
+                this.unitDeltas.push({ dr:1, dc:1 })
+            break
+            case 'S':
+                this.width = 3
+                this.height = 2
+                this.unitDeltas.push({ dr:0, dc:2 })
+                this.unitDeltas.push({ dr:0, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:0 })
+            break
+            case 'Z':
+                this.width = 3
+                this.height = 2
+                this.unitDeltas.push({ dr:0, dc:0 })
+                this.unitDeltas.push({ dr:0, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:2 })
+            break
+            case 'J':
+                this.width = 3
+                this.height = 2
+                this.unitDeltas.push({ dr:0, dc:0 })
+                this.unitDeltas.push({ dr:1, dc:0 })
+                this.unitDeltas.push({ dr:1, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:2 })
+            break
+            case 'L':
+                this.width = 3
+                this.height = 2
+                this.unitDeltas.push({ dr:1, dc:0 })
+                this.unitDeltas.push({ dr:1, dc:1 })
+                this.unitDeltas.push({ dr:1, dc:2 })
+                this.unitDeltas.push({ dr:0, dc:2 })
+                break
             default:
         }
     }
@@ -120,12 +160,32 @@ class Piece {
     }
 
 
-    public isContacting() {
+    public isContactingFloor() {
+        // checking against floor
         for(const unitIx of this.unitIxs) {
             if(unitIx + C.NUM_COLS >= C.NUM_COLS * C.NUM_ROWS) {
                 return true
             }
         }
+        return false
+    }
+
+    public isContactingFixed(fixed:CellType[], direction:DirectionType) {
+        console.log('direction:' + direction)
+        for(let i = 0; i < fixed.length; i++) {
+            if(fixed[i] !== '.') {
+              for(const pieceIx of this.unitIxs) {
+                //TODO check if piece index is one row above a fixed index
+                //console.log('rowIx of piece:' + pieceIx)
+                console.log('pieceIx: ' + pieceIx + ' i-1:' + (i-1) + ': ' + (pieceIx === i - 1))
+                if(pieceIx === i - C.NUM_COLS || (direction === 'w' && pieceIx === i + 1) || (direction === 'e' && pieceIx === i - 1)) {
+                    console.log('return true')
+                    return true
+                }
+              }
+            }
+          }
+        console.log('return false')
         return false
     }
 

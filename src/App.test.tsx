@@ -13,4 +13,3 @@ it('sanity test', () => {
   const wrapper = shallow(<App/>)
   expect(wrapper.find('.app')).toHaveLength(1)
 })
-
