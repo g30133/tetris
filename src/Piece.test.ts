@@ -16,7 +16,7 @@ describe('piece should render', () => {
     describe('with 0deg rotation', () => {
         it('O', () => {
             const p = new Piece('O', 'r')
-            p.setupPosition(1, 1, '0deg')
+            p.setupPosition(1, 1, 0)
             p.emit(board)
             expect(board[1 * C.NUM_COLS + 1]).toBe('r')
             expect(board[1 * C.NUM_COLS + 2]).toBe('r')
@@ -26,7 +26,7 @@ describe('piece should render', () => {
 
         it('I', () => {
             const p = new Piece('I', 'r')
-            p.setupPosition(1, 1, '0deg')
+            p.setupPosition(1, 1, 0)
             p.emit(board)
             Util.dumpBoard(board)
 
@@ -40,7 +40,7 @@ describe('piece should render', () => {
     describe('with 90deg rotation', () => {
         it('O', () => {
             const p = new Piece('O', 'r')
-            p.setupPosition(1, 1, '90deg')
+            p.setupPosition(1, 1, 90)
             p.emit(board)
             expect(board[1 * C.NUM_COLS + 1]).toBe('r')
             expect(board[1 * C.NUM_COLS + 2]).toBe('r')
@@ -50,7 +50,7 @@ describe('piece should render', () => {
 
         it('I', () => {
             const p = new Piece('I', 'r')
-            p.setupPosition(1, 1, '90deg')
+            p.setupPosition(1, 1, 90)
             p.emit(board)
             Util.dumpBoard(board)
             expect(board[1 * C.NUM_COLS + 1]).toBe('r')
@@ -83,18 +83,25 @@ describe('testing collision', () => {
     it('testing piece collision against floor', () => {
         Util.dumpBoard(fixed)
         const p = new Piece('O', 'r')
-        p.setupPosition(C.NUM_ROWS - 2, 4, '0deg')
+        p.setupPosition(C.NUM_ROWS - 2, 4, 0)
         p.emit(board)
         Util.dumpBoard(board)
         expect(p.isContactingFloor()).toBe(true)
     })
 
-    it.only('testing piece collision against fixed', () => {
+    it.skip('testing collision piece against walls', () => {
+        fixed = []
         const p = new Piece('O', 'r')
-        p.setupPosition(C.NUM_ROWS - 5, 1, '0deg')
+        p.setupPosition(4, 0, 0)
+        p.emit(board)
+        expect(p.isContactingFloor()).toBe(true)
+    })
+    it.skip('testing collision piece against walls', () => {
+        fixed = []
+        const p = new Piece('O', 'r')
+        p.setupPosition(4, 8, 0)
         p.emit(board)
         Util.dumpBoard(board)
-
-        expect(p.isContactingFixed(fixed, 'w')).toBe(true)
+        expect(p.isContactingFloor()).toBe(true)
     })
 })

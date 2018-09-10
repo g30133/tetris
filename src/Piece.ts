@@ -20,6 +20,7 @@ class Piece {
     height:number
     startRow:number
     startCol:number
+    rotateAngle:number
 
     constructor(type:PieceType, color:PieceColor) {
         this.type = type
@@ -106,27 +107,48 @@ class Piece {
                 console.log('UNEXPECTED DIRECTION:' + direction)
             break
         }
-        this.setupPosition(this.startRow, this.startCol, '0deg')
+        console.log('this.rotateAngle:' + this.rotateAngle)
+        this.setupPosition(this.startRow, this.startCol, this.rotateAngle)
     }
 
-    public setupPosition(startRow:number, startCol:number, rotateAngle:rotateType) {
+    public rotate(rotateAngle:number) {
+        switch(rotateAngle) {
+            case 0:
+                this.rotateAngle = 0
+            break
+            case 90:
+                this.rotateAngle = 90
+            break
+            case 180:
+                this.rotateAngle = 180
+            break
+            case 270:
+                this.rotateAngle = 270
+            break
+            default:
+        }
+    }
+
+    public setupPosition(startRow:number, startCol:number, rotateAngle:number) {
         this.startRow = startRow
         this.startCol = startCol
 
         this.unitIxs = []
         for(let i = 0; i < this.unitDeltas.length; i++) {
             const delta = this.unitDeltas[i]
+            console.log('rotateAngle is :' + rotateAngle)
             switch(rotateAngle) {
-                case '0deg' : {
+                case 0 : {
                     const r = startRow + delta.dr
                     const c = startCol + delta.dc
 //                    console.log('r:' + r + '    c:' + c)
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
+                    this.rotateAngle = 0
                 }
                 break
-                case '90deg' : {
+                case 90 : {
                     const r = startRow + delta.dc
                     const c = startCol - delta.dr + (this.height - 1)
 //                    console.log('r:' + r + '    c:' + c)
@@ -134,22 +156,25 @@ class Piece {
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
+                    this.rotateAngle = 90
                 }
                 break
-                case '180deg' : {
+                case 180 : {
                     const r = startRow - delta.dr + (this.height - 1)
                     const c = startCol - delta.dc + (this.width - 1)
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
+                    this.rotateAngle = 180
                 }
                 break
-                case '270deg' : {
+                case 270 : {
                     const r = startRow - delta.dc + (this.width - 1)
                     const c = startCol + delta.dr
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
+                    this.rotateAngle = 270
                 }
                 break
                 default: {
@@ -157,28 +182,44 @@ class Piece {
                 }
             }
         }
+        console.log('this.rotateAngle:' + this.rotateAngle)
+
     }
 
 
+/*    public isContactingWall() {
+        //right wall
+        if((unitIx % C.NUM_COLS) >= C.NUM_COLS-1  && direction === 'e') {
+            console.log('HIT RIGHT WALL')
+            return true
+        }
+
+        //left wall
+        if((unitIx % C.NUM_COLS) <= 0 && direction === 'w') {
+            console.log('HIT LEFT WALL')
+            return true
+        }
+    }
+*/
     public isContactingFloor() {
         // checking against floor
+        console.log('isContactingFloor')
         for(const unitIx of this.unitIxs) {
+            console.log('unitIx:' + unitIx)
+            //floor
             if(unitIx + C.NUM_COLS >= C.NUM_COLS * C.NUM_ROWS) {
+                console.log('HIT FLOOR')
                 return true
             }
         }
         return false
     }
 
-    public isContactingFixed(fixed:CellType[], direction:DirectionType) {
-        console.log('direction:' + direction)
+    public isContactingFixed(fixed:CellType[]) {
         for(let i = 0; i < fixed.length; i++) {
             if(fixed[i] !== '.') {
               for(const pieceIx of this.unitIxs) {
-                //TODO check if piece index is one row above a fixed index
-                //console.log('rowIx of piece:' + pieceIx)
-                console.log('pieceIx: ' + pieceIx + ' i-1:' + (i-1) + ': ' + (pieceIx === i - 1))
-                if(pieceIx === i - C.NUM_COLS || (direction === 'w' && pieceIx === i + 1) || (direction === 'e' && pieceIx === i - 1)) {
+                if(pieceIx === i - C.NUM_COLS) {
                     console.log('return true')
                     return true
                 }
@@ -187,6 +228,19 @@ class Piece {
           }
         console.log('return false')
         return false
+    }
+
+    public isMovableTo(fixed:CellType[], direction:DirectionType) {
+        for(let i = 0; i < this.unitIxs.length; i++) {
+            if(direction === 'w') {
+                if((this.unitIxs[i] % C.NUM_COLS) <= 0 && direction === 'w') return false
+                if(fixed[this.unitIxs[i] - 1] !== '.') return false
+            } else if(direction === 'e') {
+                if((this.unitIxs[i] % C.NUM_COLS) >= C.NUM_COLS-1  && direction === 'e') return false
+                if(fixed[this.unitIxs[i] + 1] !== '.') return false
+            }
+        }
+        return true
     }
 
     public emit(board:CellType[]) {

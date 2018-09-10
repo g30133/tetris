@@ -4,13 +4,16 @@ import './App.css';
 import * as C from './constants'
 import Board, { CellType } from './Board'
 import Piece, { PieceType, DirectionType } from './Piece';
-import Util from './Util'
+//import Util from './Util'
 
 interface AppState {
   board: CellType[]
+  currRotateIx: number
 }
 
 class App extends React.Component<any, AppState> {
+
+  // instance variables
   currentPiece: Piece
   fixed: CellType[]
   pieceTypes: PieceType[]
@@ -23,6 +26,7 @@ class App extends React.Component<any, AppState> {
 
     this.state = {
       board: [],
+      currRotateIx: 0
     }
 
     this.init()
@@ -34,10 +38,7 @@ class App extends React.Component<any, AppState> {
       this.state.board.push('.')
     }
 
-    console.log('pieceType:' + this.pieceTypes)
-
     this.direction = 's'
-
     this.pieceTypes = []
 
     this.pieceTypes.push('I')
@@ -50,7 +51,7 @@ class App extends React.Component<any, AppState> {
 
     const index = Math.floor(Math.random() * this.pieceTypes.length)
     this.currentPiece = new Piece(this.pieceTypes[index], 'r')
-    this.currentPiece.setupPosition(-3, Math.floor(Math.random() * C.NUM_COLS), '0deg')
+    this.currentPiece.setupPosition(0, 5, this.state.currRotateIx)
 
     this.fixed = Array.from(this.state.board)
 
@@ -62,7 +63,12 @@ class App extends React.Component<any, AppState> {
       } else if(event.key === 'ArrowDown') {
         //TODO MAKE PIECE MOVE ALL THE WAY DOWN
       } else if(event.key === 'ArrowUp') {
-        //TODO MAKE PIECE ROTATE
+        //rotate is not happening instantly like move!!! fix!!!
+        this.setState(prevState => {
+          return {
+            currRotateIx: (prevState.currRotateIx + 90) % 360
+          }
+        })
       }
     })
   }
@@ -72,60 +78,41 @@ class App extends React.Component<any, AppState> {
   }
 
   private onKeyDown(direction:DirectionType) {
-/*    if(direction === 'left') {
-      console.log('left clicked')
-      this.currentPiece.move('w')
-    } else if(direction === 'right') {
-      console.log('right clicked')
-      this.currentPiece.move('e')
+    // TODO
+//    this.direction = direction
+    if(this.isSupported() === false) {
+      if(this.currentPiece.isMovableTo(this.fixed, direction)) {
+        console.log('isMovableTo:' + direction)
+        this.currentPiece.move(direction)
+      }
+      const newBoard = Array.from(this.fixed)
+      this.currentPiece.emit(newBoard)
+//      Util.dumpBoard(newBoard)
+      this.setState({
+        board: newBoard
+      })
     }
-*/
-    this.direction = direction
   }
 
-  private isContacting():boolean {
+  // returns true when current piece is supported by the floor or by other pieces
+  //         false otherwise
+  private isSupported():boolean {
     // TODO
     // 1. current piece against floor
     if(this.currentPiece.isContactingFloor()) return true
-    if(this.currentPiece.isContactingFixed(this.fixed, this.direction)) {
-      console.log('THAT MOVE CAUSES CONTACT WITH FIXED')
+    if(this.currentPiece.isContactingFixed(this.fixed)) {
       return true
     }
-
-
-    // TODO
-    // check contacting with other pieces
-    // 2. current piece against fixed
-/*    for(let i = 0; i < this.fixed.length; i++) {
-      if(this.fixed[i] !== '.') {
-        console.log('fixed Index:' + i)
-        for(const pieceIx of this.currentPiece.unitIxs) {
-          console.log('pieceIx:' + pieceIx)
-          //TODO check if piece index is one row above a fixed index
-          if(pieceIx === i - C.NUM_COLS) {
-            console.log('LOOKS LIKE YOU CRASH TO ANOTHER PIECE!')
-            return true
-          }
-        }
-      }
-    }
-    */
-//    for(const fixedPiece of this.fixed) {
-//      console.log('fixed Piece:' + fixedPiece)
-//    }
-
     return false
   }
 
   private gameLoop() {
-    console.log('gameLoop() board:')
-    Util.dumpBoard(this.state.board)
+//    Util.dumpBoard(this.state.board)
     setTimeout(this.gameLoop, C.ANIMATION_DELAY)
 
     const newBoard = Array.from(this.fixed)
     
-    if (this.isContacting()) {
-      console.log('yes contacting')
+    if (this.isSupported()) {
       // 1. move currentPiece into fixed
       if(this.direction === 's') {
         this.currentPiece.emit(this.fixed)
@@ -135,28 +122,18 @@ class App extends React.Component<any, AppState> {
           // 2. assign currentPiece a new Piece
           const index = Math.floor(Math.random() * this.pieceTypes.length)
           this.currentPiece = new Piece(this.pieceTypes[index], 'r')
-          this.currentPiece.setupPosition(-3, Math.floor(Math.random() * (C.NUM_COLS-1)), '0deg')
+          this.currentPiece.setupPosition(0, 5, this.state.currRotateIx)
         })
       }
     }
     else {
-      if(this.currentPiece.isContactingFixed(this.fixed, this.direction) === false) { 
-        console.log('moving piece not contacting direction:' + this.direction)
-        this.currentPiece.move(this.direction)
-      }
-
-      if(this.direction !== 's' && this.currentPiece.isContactingFixed(this.fixed, 's') === false) {
-        this.currentPiece.move('s')
-      }
+      this.currentPiece.move('s')
+      this.currentPiece.rotate(this.state.currRotateIx)
       this.currentPiece.emit(newBoard)
-      console.log('currentPiece:' + JSON.stringify(this.currentPiece))
       this.setState({
         board: newBoard
       })
     }
-    this.direction = 's'
-    console.log('this.currentPiece:' + JSON.stringify(this.currentPiece))
-
   }
 
   public render() {
