@@ -62,13 +62,28 @@ class App extends React.Component<any, AppState> {
         this.onKeyDown('e')
       } else if(event.key === 'ArrowDown') {
         //TODO MAKE PIECE MOVE ALL THE WAY DOWN
-      } else if(event.key === 'ArrowUp') {
-        //rotate is not happening instantly like move!!! fix!!!
+        const newBoard = Array.from(this.fixed)
+        this.currentPiece.moveAllTheWayDown(this.fixed)
+        this.currentPiece.emit(newBoard)
         this.setState(prevState => {
           return {
-            currRotateIx: (prevState.currRotateIx + 90) % 360
+            board: newBoard
           }
         })
+      } else if(event.key === 'ArrowUp') {        
+        if(this.currentPiece.isRotateable(this.fixed, (this.state.currRotateIx + 90) % 360)) {
+          const newBoard = Array.from(this.fixed)
+          this.currentPiece.rotate((this.state.currRotateIx + 90) % 360)
+          this.currentPiece.emit(newBoard)
+          this.setState(prevState => {
+            return {
+              board: newBoard,
+              currRotateIx: (prevState.currRotateIx + 90) % 360
+            }
+          }, () => {
+            console.log('currRotateIx:' + this.state.currRotateIx)
+          })
+        }
       }
     })
   }
@@ -107,6 +122,7 @@ class App extends React.Component<any, AppState> {
   }
 
   private gameLoop() {
+    console.log('currRotateIx:' + this.state.currRotateIx)
 //    Util.dumpBoard(this.state.board)
     setTimeout(this.gameLoop, C.ANIMATION_DELAY)
 
@@ -128,7 +144,9 @@ class App extends React.Component<any, AppState> {
     }
     else {
       this.currentPiece.move('s')
-      this.currentPiece.rotate(this.state.currRotateIx)
+      if(this.currentPiece.isRotateable(this.fixed, this.state.currRotateIx)) {
+        this.currentPiece.rotate(this.state.currRotateIx)
+      }
       this.currentPiece.emit(newBoard)
       this.setState({
         board: newBoard
@@ -137,6 +155,7 @@ class App extends React.Component<any, AppState> {
   }
 
   public render() {
+    console.log('rerender()')
     return (
       <div className="app">
         <Board

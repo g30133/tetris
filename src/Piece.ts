@@ -112,65 +112,44 @@ class Piece {
     }
 
     public rotate(rotateAngle:number) {
-        switch(rotateAngle) {
-            case 0:
-                this.rotateAngle = 0
-            break
-            case 90:
-                this.rotateAngle = 90
-            break
-            case 180:
-                this.rotateAngle = 180
-            break
-            case 270:
-                this.rotateAngle = 270
-            break
-            default:
-        }
-    }
-
-    public setupPosition(startRow:number, startCol:number, rotateAngle:number) {
-        this.startRow = startRow
-        this.startCol = startCol
-
+        //should check if spaces are empty before rotating
         this.unitIxs = []
         for(let i = 0; i < this.unitDeltas.length; i++) {
             const delta = this.unitDeltas[i]
-            console.log('rotateAngle is :' + rotateAngle)
             switch(rotateAngle) {
-                case 0 : {
-                    const r = startRow + delta.dr
-                    const c = startCol + delta.dc
-//                    console.log('r:' + r + '    c:' + c)
-                    if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
-                        this.unitIxs.push(C.NUM_COLS * r + c)
-                    }
-                    this.rotateAngle = 0
+                case 0: {
+                    const r = this.startRow + delta.dr
+                    const c = this.startCol + delta.dc
+//                    if(board[C.NUM_COLS * r + c] === '.') {
+
+                        if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
+                            this.unitIxs.push(C.NUM_COLS * r + c)
+                        }
+                        this.rotateAngle = 0
+//                    }
                 }
                 break
-                case 90 : {
-                    const r = startRow + delta.dc
-                    const c = startCol - delta.dr + (this.height - 1)
-//                    console.log('r:' + r + '    c:' + c)
-                    
+                case 90: {
+                    const r = this.startRow + delta.dc
+                    const c = this.startCol - delta.dr + (this.height - 1)
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
                     this.rotateAngle = 90
                 }
                 break
-                case 180 : {
-                    const r = startRow - delta.dr + (this.height - 1)
-                    const c = startCol - delta.dc + (this.width - 1)
+                case 180: {
+                    const r = this.startRow - delta.dr + (this.height - 1)
+                    const c = this.startCol - delta.dc + (this.width - 1)
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
                     this.rotateAngle = 180
                 }
                 break
-                case 270 : {
-                    const r = startRow - delta.dc + (this.width - 1)
-                    const c = startCol + delta.dr
+                case 270: {
+                    const r = this.startRow - delta.dc + (this.width - 1)
+                    const c = this.startCol + delta.dr
                     if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
@@ -182,8 +161,27 @@ class Piece {
                 }
             }
         }
-        console.log('this.rotateAngle:' + this.rotateAngle)
+    }
 
+    public moveAllTheWayDown(fixed:CellType[]) {
+        console.log('this.moveAllTheWayDown()')
+        loop1:
+        for(let test = 0; test < 100; test++) {
+            for(let i = 0; i < this.unitIxs.length; i++) {
+                if(this.unitIxs[i] + C.NUM_COLS > C.NUM_ROWS * C.NUM_COLS || fixed[this.unitIxs[i] + C.NUM_COLS] !== '.') {
+                    break loop1
+                }
+            }
+            this.move('s')
+            console.log('this.unitIx[0]:' + this.unitIxs)
+        }
+    }
+
+    public setupPosition(startRow:number, startCol:number, rotateAngle:number) {
+        this.startRow = startRow
+        this.startCol = startCol
+        this.unitIxs = []
+        this.rotate(rotateAngle)
     }
 
 
@@ -228,6 +226,69 @@ class Piece {
           }
         console.log('return false')
         return false
+    }
+
+    public isRotateable(fixed:CellType[], rotateAngle:number) {
+        for(let i = 0; i < this.unitDeltas.length; i++) {
+            const delta = this.unitDeltas[i]
+            //check if each unit of the piece is inside of the board, if not, return false
+            console.log('this.startCol + delta.dc:' + (this.startCol + delta.dc) % C.NUM_COLS)
+            //checking is different for each rotateAngle
+//            if((this.startCol + delta.dc) % C.NUM_COLS >= C.NUM_COLS - 1) {
+//                console.log('a piece is outside of the board')
+//                return false
+//            }
+            let index = 0
+            switch(rotateAngle) {
+                case 0: {
+                    const r = this.startRow + delta.dr
+                    const c = this.startCol + delta.dc
+                    index = C.NUM_COLS * r + c
+                    //TODO for each angle
+                    if(c >= C.NUM_COLS) {
+                        console.log('a piece is outside of the board')
+                        return false
+                    }
+                }
+                break
+                case 90: {
+                    const r = this.startRow + delta.dc
+                    const c = this.startCol - delta.dr + (this.height - 1)
+                    index = C.NUM_COLS * r + c
+                    if(c >= C.NUM_COLS) {
+                        console.log('a piece is outside of the board')
+                        return false
+                    }
+                }
+                break
+                case 180: {
+                    const r = this.startRow - delta.dr + (this.height - 1)
+                    const c = this.startCol - delta.dc + (this.width - 1)
+                    index = C.NUM_COLS * r + c
+                    if(c >= C.NUM_COLS) {
+                        console.log('a piece is outside of the board')
+                        return false
+                    }
+                }
+                break
+                case 270: {
+                    const r = this.startRow - delta.dc + (this.width - 1)
+                    const c = this.startCol + delta.dr
+                    index = C.NUM_COLS * r + c
+                    if(c >= C.NUM_COLS) {
+                        console.log('a piece is outside of the board')
+                        return false
+                    }
+                }
+                break
+            }
+            if(fixed[index] !== '.') {
+                console.log('isRotateable() false:' + fixed[this.unitIxs[index]] + ' index:' + index)
+                return false
+            }
+        }
+        console.log('isRotateable() true')
+        return true
     }
 
     public isMovableTo(fixed:CellType[], direction:DirectionType) {

@@ -88,20 +88,4 @@ describe('testing collision', () => {
         Util.dumpBoard(board)
         expect(p.isContactingFloor()).toBe(true)
     })
-
-    it.skip('testing collision piece against walls', () => {
-        fixed = []
-        const p = new Piece('O', 'r')
-        p.setupPosition(4, 0, 0)
-        p.emit(board)
-        expect(p.isContactingFloor()).toBe(true)
-    })
-    it.skip('testing collision piece against walls', () => {
-        fixed = []
-        const p = new Piece('O', 'r')
-        p.setupPosition(4, 8, 0)
-        p.emit(board)
-        Util.dumpBoard(board)
-        expect(p.isContactingFloor()).toBe(true)
-    })
 })
