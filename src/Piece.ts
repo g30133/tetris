@@ -1,7 +1,7 @@
 import * as C from './constants'
 import { CellType } from './Board';
 
-type PieceColor = 'r' | 'g' | 'b' | 'y'
+export type PieceColor = 'c' | 'y' | 'p' | 'g' | 'r' | 'b' | 'o'
 export type PieceType = 'I' | 'O' | 'T' | 'S' | 'Z' | 'J' | 'L'
 export type DirectionType = 's' |'e' | 'w'
 export type rotateType = '0deg' | '90deg' | '180deg' | '270deg'
@@ -166,7 +166,7 @@ class Piece {
     public moveAllTheWayDown(fixed:CellType[]) {
         console.log('this.moveAllTheWayDown()')
         loop1:
-        for(let test = 0; test < 100; test++) {
+        while(true) {
             for(let i = 0; i < this.unitIxs.length; i++) {
                 if(this.unitIxs[i] + C.NUM_COLS > C.NUM_ROWS * C.NUM_COLS || fixed[this.unitIxs[i] + C.NUM_COLS] !== '.') {
                     break loop1
@@ -306,7 +306,7 @@ class Piece {
 
     public emit(board:CellType[]) {
         for(let index = 0; index < this.unitIxs.length; index++) {
-            board[this.unitIxs[index]] = this.color
+            board[this.unitIxs[index]] = this.color 
         }
     }
 }

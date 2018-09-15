@@ -20,6 +20,31 @@ class Util {
           board[cellIx] =  '.' as CellType
         }
     }
+
+    public static checkFilledRows(fixed:CellType[]) {
+        let filledRowsIndexes:number[] = []
+        for(let rowIx = 0; rowIx < C.NUM_ROWS; rowIx++) {
+            let isFilled = true
+            for(let colIx = 0; colIx < C.NUM_COLS; colIx++) {
+                const index = rowIx * C.NUM_COLS + colIx
+                if(fixed[index] === '.') {
+                    isFilled = false
+                    break
+                }
+            }
+            if(isFilled) {
+                filledRowsIndexes.push(rowIx)
+            }
+        }
+        return filledRowsIndexes
+    }
+
+    public static shiftBoardDown(fixed:CellType[], rowIx:number) {
+        console.log('shiftBoardDown()')
+        for(let i = (rowIx+1) * C.NUM_COLS - 1; i >= C.NUM_COLS; i--) {
+            fixed[i] = fixed[i-C.NUM_COLS]
+        }
+    }
 }
 
 export default Util

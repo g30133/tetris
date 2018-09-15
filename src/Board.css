@@ -1,5 +1,5 @@
 .board {
-    background-color: blue;
+    background-color: darkblue;
     flex: 0 0 auto;
   
     display: grid;
@@ -14,18 +14,30 @@
     background-color: black;
 }
 
-.r {
-    background-color: red;
+.c {
+    background-color: cyan;
+}
+
+.y {
+    background-color: yellow;
+}
+
+.p {
+    background-color: purple;
 }
 
 .g {
     background-color: green;
 }
 
+.r {
+    background-color: red;
+}
+
 .b {
     background-color: blue;
 }
 
-.y {
-    background-color: purple;
+.o {
+    background-color: orange;
 }
