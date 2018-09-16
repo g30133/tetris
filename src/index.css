@@ -1,13 +1,13 @@
 :root {
   --board-num-rows: 20;
   --board-num-cols: 10;
-  --board-cell-size: calc(4vw  - 2px);
+  --board-cell-size: calc(6vw  - 2px);
   --board-gap: 2px;
 }
 
-@media (min-aspect-ratio: 1/1) {
+@media (min-aspect-ratio: 3/5) {
   :root {
-    --board-cell-size: calc(4vh - 2px);
+    --board-cell-size: calc(3.5vh - 2px);
   }
 }
 

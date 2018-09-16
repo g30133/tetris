@@ -82,7 +82,7 @@ class App extends React.Component<any, AppState> {
 
     const index = Math.floor(Math.random() * this.pieceTypes.length)
     this.currentPiece = new Piece(this.pieceTypes[index], this.colorTypes[index])
-    this.currentPiece.setupPosition(-3, 5, this.state.currRotateIx)
+    this.currentPiece.setupPosition(C.STARTING_ROW, C.STARTING_COL, this.state.currRotateIx)
 
     this.fixed = Array.from(this.state.board)
 
@@ -242,7 +242,7 @@ class App extends React.Component<any, AppState> {
             // 3. assign currentPiece a new Piece
             const index = Math.floor(Math.random() * this.pieceTypes.length)
             this.currentPiece = new Piece(this.pieceTypes[index], this.colorTypes[index])
-            this.currentPiece.setupPosition(-3, 5, this.state.currRotateIx)
+            this.currentPiece.setupPosition(C.STARTING_ROW, C.STARTING_COL, this.state.currRotateIx)
           })
         } else {
           this.numSupportedLoops++
@@ -269,10 +269,11 @@ class App extends React.Component<any, AppState> {
         />
         <div className='score'>Score: {this.score}</div>
         <div className='buttons'>
-          <div className='button left' onClick={() => {this.onKeyDown('w')}}> W </div>
-          <div className='button down' onClick={this.onDownClicked}> S </div>
-          <div className='button right' onClick={() => {this.onKeyDown('e')}}> E </div>
+          <div className='button left' onClick={() => {this.onKeyDown('w')}}> &lt; </div>
+          <div className='button down' onClick={this.onDownClicked}> V </div>
+          <div className='button right' onClick={() => {this.onKeyDown('e')}}> &gt; </div>
           <div className='button rotate' onClick={this.onRotateClicked}> Rotate </div>
+          <div className='button name'>Geo</div>
           <div className='button space' onClick={this.onSpaceClicked}> Fall </div>
         </div>
         <div className='result hidden'>
