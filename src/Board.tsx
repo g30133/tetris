@@ -45,7 +45,7 @@ class Board extends React.Component<BoardProps> {
         board.push(<div key={i} className={className}/>)
     }
     return (
-     <div className='board'>{board}</div>   
+     <div className='board'>{board}</div>
     )
   }
 }

@@ -122,7 +122,7 @@ class Piece {
                     const c = this.startCol + delta.dc
 //                    if(board[C.NUM_COLS * r + c] === '.') {
 
-                        if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
+                        if(/*r >= 0 && */r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                             this.unitIxs.push(C.NUM_COLS * r + c)
                         }
                         this.rotateAngle = 0
@@ -132,7 +132,7 @@ class Piece {
                 case 90: {
                     const r = this.startRow + delta.dc
                     const c = this.startCol - delta.dr + (this.height - 1)
-                    if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
+                    if(/*r >= 0 && */r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
                     this.rotateAngle = 90
@@ -141,7 +141,7 @@ class Piece {
                 case 180: {
                     const r = this.startRow - delta.dr + (this.height - 1)
                     const c = this.startCol - delta.dc + (this.width - 1)
-                    if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
+                    if(/*r >= 0 && */r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
                     this.rotateAngle = 180
@@ -150,7 +150,7 @@ class Piece {
                 case 270: {
                     const r = this.startRow - delta.dc + (this.width - 1)
                     const c = this.startCol + delta.dr
-                    if(r >= 0 && r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
+                    if(/*r >= 0 && */r < C.NUM_ROWS && c >= 0 && c < C.NUM_COLS) {
                         this.unitIxs.push(C.NUM_COLS * r + c)
                     }
                     this.rotateAngle = 270
@@ -165,6 +165,7 @@ class Piece {
 
     public moveAllTheWayDown(fixed:CellType[]) {
         console.log('this.moveAllTheWayDown()')
+        let numMoves = 0
         loop1:
         while(true) {
             for(let i = 0; i < this.unitIxs.length; i++) {
@@ -172,9 +173,11 @@ class Piece {
                     break loop1
                 }
             }
+            numMoves++
             this.move('s')
             console.log('this.unitIx[0]:' + this.unitIxs)
         }
+        return numMoves
     }
 
     public setupPosition(startRow:number, startCol:number, rotateAngle:number) {
@@ -218,7 +221,6 @@ class Piece {
             if(fixed[i] !== '.') {
               for(const pieceIx of this.unitIxs) {
                 if(pieceIx === i - C.NUM_COLS) {
-                    console.log('return true')
                     return true
                 }
               }
