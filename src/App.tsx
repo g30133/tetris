@@ -17,8 +17,6 @@ interface PlayerInfo {
 }
 
 class App extends React.Component<any, AppState> {
-
-  
   // instance variables
   currentPiece: Piece
   fixed: CellType[]
