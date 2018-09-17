@@ -40,10 +40,35 @@ class Util {
     }
 
     public static shiftBoardDown(fixed:CellType[], rowIx:number) {
-        console.log('shiftBoardDown()')
         for(let i = (rowIx+1) * C.NUM_COLS - 1; i >= C.NUM_COLS; i--) {
             fixed[i] = fixed[i-C.NUM_COLS]
         }
+    }
+
+    public static async loadScoresFromServer() {
+        console.log('loading scores (download) from server')
+        const response = await fetch('http://g30server.herokuapp.com/tetrisScores/loadall')
+        const json = await response.json()
+        console.log(JSON.stringify(json));
+        return json
+    }
+  
+    public static async saveScoreToServer(score:number, name:string) {
+        const response = await fetch(
+            'http://g30server.herokuapp.com/tetrisScores/save',
+            {
+                method: 'POST',
+                body: JSON.stringify({name:name, score:score}),
+                headers:{ 'Content-Type': 'application/json'}
+            })
+        const json = await response.json()
+        return json
+    }
+
+    public static async clearScoresOnServer() {
+        const response = await fetch('http://g30server.herokuapp.com/tetrisScores', {method: 'DELETE'})
+        const json = await response.json()
+        return json
     }
 }
 

@@ -28,7 +28,7 @@ class App extends React.Component<any, AppState> {
   score: number
   isGameOver: boolean
   numSupportedLoops: number
-  topThreePlayers: PlayerInfo[]
+  topPlayer: PlayerInfo
 
   constructor(props:any) {
     super(props)
@@ -47,21 +47,18 @@ class App extends React.Component<any, AppState> {
 
   }
 
-  private init() {
+  private async init() {
     for (let i = 0; i < C.NUM_ROWS * C.NUM_COLS; i++) {
       this.state.board.push('.')
     }
-
     //remove this later when implement server side
-    this.topThreePlayers = []
-    this.topThreePlayers.push({name: 'Geo', score: 100})
-    this.topThreePlayers.push({name: 'Jaimie', score: 90})
-    this.topThreePlayers.push({name: 'Jae', score: 80})
+
   
     this.score = 0
     this.isGameOver = false
     this.direction = 's'
     this.pieceTypes = []
+    this.topPlayer = {name: '-', score:0}
 
     this.pieceTypes.push('I')
     this.pieceTypes.push('J')
@@ -101,6 +98,30 @@ class App extends React.Component<any, AppState> {
         this.onSpaceClicked()
       }
     })
+
+    /*
+    this.topThreePlayers = []
+    const players = await Util.loadScoresFromServer()
+    console.log(players)
+    if(players[0] !== undefined) {
+      this.topThreePlayers.push({name:players[0].name, score:players[0].score})
+    }
+    if(players[1] !== undefined) {
+      this.topThreePlayers.push({name:players[1].name, score:players[1].score})
+    }
+    if(players[2] !== undefined) {
+      this.topThreePlayers.push({name:players[2].name, score:players[2].score})
+    }
+    console.log('this.topThreePlayers:' + JSON.stringify(this.topThreePlayers))*/
+    const players = await Util.loadScoresFromServer()
+    players.sort((player1:PlayerInfo, player2:PlayerInfo) => {
+      return player1.score - player2.score
+    })
+    console.log('players:' + JSON.stringify(players))
+    if(players[players.length - 1] !== undefined) {
+      this.topPlayer = players[players.length - 1]
+    }
+    console.log('this.topPlayer:' + JSON.stringify(this.topPlayer))
   }
 
   componentDidMount() {
@@ -179,9 +200,42 @@ class App extends React.Component<any, AppState> {
     }
     return false
   }
+/*
+  private changeTopThreePlayers(name:string) {
+    if(this.score > this.topThreePlayers[2].score) {
+      this.topThreePlayers[2].name = name.substr(0, 8)
+      this.topThreePlayers[2].score = this.score
+    }
+    if(this.score > this.topThreePlayers[1].score) {
+      this.topThreePlayers[2].name = this.topThreePlayers[1].name
+      this.topThreePlayers[2].score = this.topThreePlayers[1].score
 
+      this.topThreePlayers[1].name = name.substr(0, 8)
+      this.topThreePlayers[1].score = this.score
+
+    } 
+    if(this.score > this.topThreePlayers[0].score) {
+      this.topThreePlayers[2].name = this.topThreePlayers[1].name
+      this.topThreePlayers[2].score = this.topThreePlayers[1].score
+
+      this.topThreePlayers[1].name = this.topThreePlayers[0].name
+      this.topThreePlayers[1].score = this.topThreePlayers[0].score
+
+      this.topThreePlayers[0].name = name.substr(0, 8)
+      this.topThreePlayers[0].score = this.score
+    }
+  }
+*/
+  private changeTopPlayer(name:string) {
+    console.log('this.topPlayer before:' + JSON.stringify(this.topPlayer))
+    if(this.score > this.topPlayer.score) {
+      this.topPlayer.score = this.score
+      this.topPlayer.name = name
+    }
+    console.log('this.topPlayer after:' + JSON.stringify(this.topPlayer))
+  }
   private checkGameOver():boolean {
-    console.log('checkGameOver piece unitIx:' + this.currentPiece.unitIxs)
+    console.log('checkGameOver piece unitIx:' + JSON.stringify(this.currentPiece.unitIxs))
     for(let i = 0; i < this.currentPiece.unitIxs.length; i++) {
       if(this.currentPiece.unitIxs[i] < 0) {
         console.log('game is over')
@@ -196,12 +250,25 @@ class App extends React.Component<any, AppState> {
     console.log('currRotateIx:' + this.state.currRotateIx)
 //    Util.dumpBoard(this.state.board)
     if(this.isGameOver) {
+      console.log('gameOver')
+      let name = prompt("enter your name", 'Anonymous')
+      if(name === null) name = 'Anonymous'  
+//      this.changeTopThreePlayers(name)
+      this.changeTopPlayer(name)
       const result = document.querySelector('.result')
       if(result !== null) result.classList.remove('hidden')
+      Util.saveScoreToServer(this.score, name)
+      //TODO!!! This is just a bandage. Need to rerender after game is over so that if the new score is
+      //        winner, it will properly show
+      this.setState({
+        currRotateIx: 0
+      })
       return
     }
-    setTimeout(this.gameLoop, C.ANIMATION_DELAY)
 
+    setTimeout(this.gameLoop, C.ANIMATION_DELAY)
+  
+    console.log('this.fixed:' + this.fixed)
     const newBoard = Array.from(this.fixed)
     
     if (this.isSupported()) {
@@ -262,6 +329,7 @@ class App extends React.Component<any, AppState> {
 
   public render() {
     console.log('rerender()')
+    console.log('render topPlayer:' + JSON.stringify(this.topPlayer))
     return (
       <div className="app">
         <Board
@@ -279,11 +347,8 @@ class App extends React.Component<any, AppState> {
         <div className='result hidden'>
           <h1>Leaderboard</h1>
           <br/><br/>
-          Leader  [{this.topThreePlayers[0].name} ({this.topThreePlayers[0].score})]
+            Leader  [{this.topPlayer.name}]
           <br/><br/>
-          2nd [{this.topThreePlayers[1].name} ({this.topThreePlayers[1].score})]
-          <br/><br/>
-          3rd [{this.topThreePlayers[2].name} ({this.topThreePlayers[2].score})]
         </div>
       </div>
     );
