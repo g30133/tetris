@@ -108,7 +108,7 @@ class App extends React.Component<any, AppState> {
       return player1.score - player2.score
     })
 
-    this.topThreePlayers = []
+    this.topThreePlayers = [] 
     if(players[players.length - 3] !== undefined) {
       this.topThreePlayers.push({name:players[players.length - 3].name, score:players[players.length - 3].score})
     }
