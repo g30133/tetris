@@ -210,8 +210,8 @@ class App extends React.Component<any, AppState> {
       this.topThreePlayers[0].name = this.topThreePlayers[1].name
       this.topThreePlayers[0].score = this.topThreePlayers[1].score
 
-      this.topThreePlayers[1].name = this.topThreePlayers[0].name
-      this.topThreePlayers[1].score = this.topThreePlayers[0].score
+      this.topThreePlayers[1].name = this.topThreePlayers[2].name
+      this.topThreePlayers[1].score = this.topThreePlayers[2].score
 
       this.topThreePlayers[2].name = name.substr(0, 8)
       this.topThreePlayers[2].score = this.score
@@ -256,7 +256,7 @@ class App extends React.Component<any, AppState> {
     if(this.isGameOver) {
       console.log('gameOver')
       let name = prompt("enter your name", 'Anonymous')
-      if(name === null) name = 'Anonymous'
+      if(name === null) name = 'Player'
       this.changeTopThreePlayers(name)
 //      this.changeTopPlayer(name)
       console.log('this.topThreePlayers:' + JSON.stringify(this.topThreePlayers))
