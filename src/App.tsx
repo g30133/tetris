@@ -20,6 +20,7 @@ class App extends React.Component<any, AppState> {
   // instance variables
   currentPiece: Piece
   fixed: CellType[]
+  animationDelay: number
   pieceTypes: PieceType[]
   colorTypes: PieceColor[]
   direction: DirectionType
@@ -53,6 +54,7 @@ class App extends React.Component<any, AppState> {
     //remove this later when implement server side
     //Util.clearScoresOnServer()
 
+    this.animationDelay = C.ANIMATION_DELAY
     this.score = 0
     this.isGameOver = false
     this.direction = 's'
@@ -271,7 +273,7 @@ class App extends React.Component<any, AppState> {
       return
     }
 
-    setTimeout(this.gameLoop, C.ANIMATION_DELAY)
+    setTimeout(this.gameLoop, this.animationDelay)
   
     console.log('this.fixed:' + this.fixed)
     const newBoard = Array.from(this.fixed)
@@ -300,6 +302,7 @@ class App extends React.Component<any, AppState> {
               console.log('a row or more is filled')
               this.score += 100 * filledRows.length
               for(let i = 0; i < filledRows.length; i++) {
+                this.animationDelay *= 0.99
                 for(let col = 0; col < C.NUM_COLS; col++) {
                   this.fixed[filledRows[i] * C.NUM_COLS + col] = '.'
                 }
