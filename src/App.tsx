@@ -302,7 +302,7 @@ class App extends React.Component<any, AppState> {
               console.log('a row or more is filled')
               this.score += 100 * filledRows.length
               for(let i = 0; i < filledRows.length; i++) {
-                this.animationDelay *= 0.99
+                this.animationDelay *= C.SPEED_UP_FACTOR
                 for(let col = 0; col < C.NUM_COLS; col++) {
                   this.fixed[filledRows[i] * C.NUM_COLS + col] = '.'
                 }
